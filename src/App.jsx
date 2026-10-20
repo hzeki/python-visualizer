@@ -105,7 +105,7 @@ export default function App() {
   const handleReset = () => setCurrentStep(-1);
 
   return (
-    <div style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 780 }}>
+    <div translate="no" className="notranslate" style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 1400, margin: "0 auto" }}>
       <div style={{ marginBottom: 16 }}>
         <h2 style={{ margin: "0 0 4px", fontSize: 18, color: "#1e40af" }}>
            Python アルゴリズム学習支援ツール
