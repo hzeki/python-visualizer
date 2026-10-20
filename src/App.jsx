@@ -247,7 +247,16 @@ export default function App() {
   /* --- 現在のステップから表示する値を計算 --- */
   const prevVars = currentStep > 0 ? steps[currentStep - 1].vars : {};
   const currentVars = currentStep >= 0 ? steps[currentStep].vars : {};
-  const activeLine = currentStep >= 0 ? steps[currentStep].line : -1;
+  // AIが返す行番号はずれることがあるため、codeの内容が一致する行を探して補正する
+  const resolveLine = (step) => {
+    const target = (step.code || "").trim();
+    if (!target) return step.line;
+    const hits = [];
+    codeLines.forEach((l, i) => { if (l.trim() === target) hits.push(i); });
+    if (hits.length === 0 || hits.includes(step.line)) return step.line;
+    return hits.reduce((a, b) => (Math.abs(b - step.line) < Math.abs(a - step.line) ? b : a));
+  };
+  const activeLine = currentStep >= 0 ? resolveLine(steps[currentStep]) : -1;
   const currentType = currentStep >= 0 ? steps[currentStep].type : "normal";
   const loopCount = currentStep >= 0 ? steps[currentStep].loop_count : null;
   const condResult = currentStep >= 0 ? steps[currentStep].condition_result : null;
@@ -261,7 +270,7 @@ export default function App() {
   const syntaxNote =
     currentStep >= 0
       ? steps[currentStep].syntax_note ||
-        steps.find((s) => s.line === steps[currentStep].line && s.syntax_note)?.syntax_note ||
+        steps.find((s) => resolveLine(s) === activeLine && s.syntax_note)?.syntax_note ||
         null
       : null;
 
